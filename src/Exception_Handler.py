@@ -15,12 +15,3 @@ class Custom_Exception(Exception):
     #Now print the these with the help of __str__ function
     def __str__(self) -> str:
         return f" \n the file name is :{self.file_Name} \n error line number is : {self.line_number} \n error : {str(self.error_message)}"
-    
-
-if __name__=="__main__":
-    try:
-        a=4
-        b=0
-        print(a/b)
-    except Exception as e:
-        raise Custom_Exception(e,sys)    
