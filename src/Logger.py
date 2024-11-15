@@ -9,12 +9,12 @@ project_dir=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 log_path=os.path.join(project_dir,"Logs",log_name)
 os.makedirs(log_path,exist_ok=True)
 
-
+file_name=os.path.join(log_path,log_name)
 log_format="[%(asctime)s] %(levelname)s -%(name)s -%(filename)s :%(lineno)d -%(message)s"
 
 #define the basic configuration of the logging.
 logging.basicConfig(
-    filename=log_path,
+    filename=file_name,
     level=logging.INFO,
     format=log_format
 )
