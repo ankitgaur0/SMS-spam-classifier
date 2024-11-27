@@ -84,8 +84,10 @@ class Data_preprocessing:
             dataframe["no_char"]=dataframe["text"].apply(len)
 
            
-
-            dataframe["transformed_text"]=dataframe["text"].apply(lambda x: self.transform_text(x))
+            # make the new feature of transformed_text
+            dataframe["transformed_text"]=dataframe["text"].apply(self.transform_text)
+            # remove the null values in transformed entries (and in entire data)
+            
 
             # separate the independant and dependant features(means X or y)
             X=dataframe.drop(columns="target",axis=1)
@@ -96,7 +98,7 @@ class Data_preprocessing:
             y=encoder.fit_transform(y)
 
             #store the transformed data into csv file for further use.
-            with open(self.Data_config_obj.independant_data_path,"w") as file_reference:
+            with open(self.Data_config_obj.independant_data_path,"wb") as file_reference:
                 X.to_csv(file_reference,index=False)
             with open(self.Data_config_obj.dependant_data_path,"wb") as file_reference:
                 pd.DataFrame(y,columns=["target"]).to_csv(file_reference,index=False)
@@ -109,3 +111,9 @@ class Data_preprocessing:
 
         except Exception as e:
             raise Custom_Exception(e,sys)
+        
+
+if __name__=="__main__":
+    obj=Data_preprocessing()
+    X,y=obj.initiate_transformation()
+    print(X.isnull().sum())

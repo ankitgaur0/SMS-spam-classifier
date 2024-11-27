@@ -29,7 +29,7 @@ class Data_Ingest:
             # save the dataframe in data Folder as raw_data
             os.makedirs(os.path.dirname(self.data_config_obj.raw_data_path),exist_ok=True)
             with open(self.data_config_obj.raw_data_path,"w") as file_refernce:
-                dataframe.to_csv(file_refernce)
+                dataframe.to_csv(file_refernce,index=False)
 
             logging.info("save the dataframe data as raw_data.csv complete")
 
@@ -41,6 +41,7 @@ class Data_Ingest:
         except Exception as e:
             raise Custom_Exception(e,sys)
         
+
 
 
 
