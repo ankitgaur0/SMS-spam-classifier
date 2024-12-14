@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from src.Logger import logging
 from src.Exception_Handler import Custom_Exception
 
-from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer,TfidfVectorizer
 
 
@@ -17,8 +16,13 @@ input_data_path=os.path.join(project_dir,"Data","independant_data.csv")
 
 @dataclass
 class Data_Config:
-    transformed_data_path :str=os.path.join(project_dir,"Data","transformed_data.pickle")
-    CV_obj:str =os.path.join(project_dir,"artifacts","Count_Vector.pickle")
+    data_CV_obj:str =os.path.join(project_dir,"Data","Count_Vector.pickle")
+    data_tfidf_obj :str = os.path.join(project_dir,"Data","tfidf.pickle")
+    data_tfidf_obj_for1000 :str = os.path.join(project_dir,"Data","tfidf_maxfeat_1000.pickle")
+    data_tfidf_obj_for2000 :str = os.path.join(project_dir,"Data","tfidf_maxfeat_2000.pickle")
+    data_tfidf_obj_for3000 :str = os.path.join(project_dir,"Data","tfidf_maxfeat_3000.pickle")
+
+    CV_obj :str =os.path.join(project_dir,"artifacts","Count_Vector.pickle")
     tfidf_obj :str = os.path.join(project_dir,"artifacts","tfidf.pickle")
     tfidf_obj_for1000 :str = os.path.join(project_dir,"artifacts","tfidf_maxfeat_1000.pickle")
     tfidf_obj_for2000 :str = os.path.join(project_dir,"artifacts","tfidf_maxfeat_2000.pickle")
@@ -42,34 +46,49 @@ class Text_vectorization:
             tfidf_max_feature_1000=TfidfVectorizer(max_features=1000)
             tfidf_max_feature_2000=TfidfVectorizer(max_features=2000)
             tfidf_max_feature_3000=TfidfVectorizer(max_features=3000)
-
+            dataframe["transformed_text"].fillna(" ",inplace=True)
             # now fit_transformed with transformed_feature in data
-            dataframe["CountVectors"]=list[(cvectors.fit_transform(dataframe["transformed_text"]).toarray())]
-            dataframe["tfidf_vectors"]=list[(tfidf.fit_transform(dataframe["transformed_text"]).toarray())]
-            dataframe["tfidf_max_feat.1000"]=list[(tfidf_max_feature_1000.fit_transform(dataframe["transformed_text"]).toarray())]
-            dataframe["tfidf_max_feat.2000"]=list[(tfidf_max_feature_2000.fit_transform(dataframe["transformed_text"]).toarray())]
-            dataframe["tfidf_max_feat.3000"]=list[(tfidf_max_feature_3000.fit_transform(dataframe["transformed_text"]).toarray())]
+            CountVectors = cvectors.fit_transform(dataframe["transformed_text"]).toarray()
+            tfidf_vectors=tfidf.fit_transform(dataframe["transformed_text"]).toarray()
+            tfidf_max_feat_1000=tfidf_max_feature_1000.fit_transform(dataframe["transformed_text"]).toarray()
+            tfidf_max_feat_2000=tfidf_max_feature_2000.fit_transform(dataframe["transformed_text"]).toarray()
+            tfidf_max_feat_3000=tfidf_max_feature_3000.fit_transform(dataframe["transformed_text"]).toarray()
 
             # now store the independant(transformed independant_data.pickle)
-            with open(self.config_obj.transformed_data_path,"wb") as path_ref:
-                pickle.dump(path_ref,dataframe)
+
+            with open(self.config_obj.data_CV_obj,"wb") as path_ref:
+                pickle.dump(CountVectors,path_ref)
+            
+            with open(self.config_obj.data_tfidf_obj,"wb") as path_ref:
+                pickle.dump(tfidf_vectors,path_ref)
+            
+            with open(self.config_obj.data_tfidf_obj_for1000,"wb") as path_ref:
+                pickle.dump(tfidf_max_feat_1000,path_ref)
+            
+            with open(self.config_obj.data_tfidf_obj_for2000,"wb") as path_ref:
+                pickle.dump(tfidf_max_feat_2000,path_ref)
+            
+            with open(self.config_obj.data_tfidf_obj_for3000,"wb") as path_ref:
+                pickle.dump(tfidf_max_feat_3000,path_ref)
+            
+
 
             # now save  the vectorization obj for predication pipeline.
-            os.makedirs(self.config_obj.CV_obj,exist_ok=True)
+            os.makedirs(os.path.dirname(self.config_obj.CV_obj),exist_ok=True)
             with open(self.config_obj.CV_obj,"wb") as path_ref:
-                pickle.dump(path_ref,cvectors)
+                pickle.dump(cvectors,path_ref)
 
-            with open(self.config_obj.tfidf_obj) as path_ref:
-                pickle.dump(path_ref,tfidf)
+            with open(self.config_obj.tfidf_obj,"wb") as path_ref:
+                pickle.dump(tfidf,path_ref)
             
-            with open(self.config_obj.tfidf_obj_for1000) as path_ref:
-                pickle.dump(path_ref,tfidf_max_feature_1000)
+            with open(self.config_obj.tfidf_obj_for1000,"wb") as path_ref:
+                pickle.dump(tfidf_max_feature_1000,path_ref)
 
-            with open(self.config_obj.tfidf_obj_for2000) as path_ref:
-                pickle.dump(path_ref,tfidf_max_feature_2000)
+            with open(self.config_obj.tfidf_obj_for2000,"wb") as path_ref:
+                pickle.dump(tfidf_max_feature_2000,path_ref)
 
-            with open(self.config_obj.tfidf_obj_for3000) as path_ref:
-                pickle.dump(path_ref,tfidf_max_feature_3000)
+            with open(self.config_obj.tfidf_obj_for3000,"wb") as path_ref:
+                pickle.dump(tfidf_max_feature_3000,path_ref)
 
 
             # now return the dataframe(transformed dataframe with vectorization features)
@@ -78,10 +97,3 @@ class Text_vectorization:
             raise Custom_Exception(e,sys)
         
     
-
-if __name__=="__main__":
-    obj=Text_vectorization()
-    dataframe=obj.initiate_vectorization()
-    print(dataframe.head(5))
-    print("+"* 40)
-    print(dataframe.isnull().sum())

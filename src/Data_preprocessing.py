@@ -7,6 +7,8 @@ from src.Exception_Handler import Custom_Exception
 from src.Logger import logging
 from sklearn.preprocessing import LabelEncoder
 import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 import string
@@ -56,9 +58,14 @@ class Data_preprocessing:
                 text_list.append(ps.stem(i))
 
             # Now we have to join this with string to make string.
-
-            return " ".join(text_list)
+            transformed_text=" ".join(text_list)
+            logging.info(f"Original: {text}, Transformed: {transformed_text}")
+            return transformed_text
         except Exception as e:
+
+            logging.error(f"Error processing text: {text}")
+            return ""  # Default to empty string on error
+
             raise Custom_Exception(e,sys)
 
 
@@ -87,7 +94,7 @@ class Data_preprocessing:
             # make the new feature of transformed_text
             dataframe["transformed_text"]=dataframe["text"].apply(self.transform_text)
             # remove the null values in transformed entries (and in entire data)
-            
+            dataframe=dataframe.dropna()
 
             # separate the independant and dependant features(means X or y)
             X=dataframe.drop(columns="target",axis=1)

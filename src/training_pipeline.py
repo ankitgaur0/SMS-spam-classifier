@@ -29,5 +29,16 @@ try:
     vectorization=Text_vectorization()
     dataframe=vectorization.initiate_vectorization()
 
+    # train the model and store the model and their accuracy score
+    from src.model_training import DataPaths,ModelTrainer
+    trainer = ModelTrainer()
+    trainer.train_and_save_models()
+
+    # model evaluate (which model is best ) , visualize on mlflow
+    from src.model_evaluate import DataPaths,ModelEvaluator
+    evaluator = ModelEvaluator()
+    evaluator.evaluate_models()
+
+
 except Exception as e:
     raise Custom_Exception(e,sys)
